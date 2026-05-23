@@ -1,183 +1,389 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Samika Khadka</title>
+
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    background: #fdf6f0;
+html,body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#fdf6f0;
+  font-family:'DM Sans',sans-serif;
+}
+
+.ombre{
+  position:fixed;
+  top:0;
+  right:0;
+  width:45%;
+  height:100%;
+  background:linear-gradient(
+    160deg,
+    #f9c8d8 0%,
+    #e8b8d8 40%,
+    #c8a8e8 80%,
+    #b8c8f0 100%
+  );
+  opacity:0.5;
+  border-radius:60% 0 0 60%;
+  z-index:0;
+}
+
+.blob{
+  position:fixed;
+  border-radius:50%;
+  filter:blur(55px);
+  opacity:0.28;
+  animation:float 8s ease-in-out infinite;
+  z-index:0;
+}
+
+.b1{
+  width:360px;
+  height:360px;
+  background:#f5c6d0;
+  top:-80px;
+  left:-80px;
+}
+
+.b2{
+  width:200px;
+  height:200px;
+  background:#f9e0bb;
+  top:20%;
+  left:35%;
+  animation-delay:1.5s;
+}
+
+.b3{
+  width:180px;
+  height:180px;
+  background:#b8d8e8;
+  bottom:-60px;
+  left:20%;
+  animation-delay:3s;
+}
+
+@keyframes float{
+  0%,100%{
+    transform:translateY(0) scale(1);
+  }
+  50%{
+    transform:translateY(-18px) scale(1.04);
+  }
+}
+
+#bubbles{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:1;
+  pointer-events:none;
+}
+
+.wrap{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2;
+}
+
+.card{
+  background:rgba(255,255,255,0.68);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+  border:1px solid rgba(255,255,255,0.9);
+  border-radius:36px;
+  padding:72px 70px;
+  max-width:720px;
+  width:92%;
+  text-align:center;
+  box-shadow:0 8px 50px rgba(180,130,160,0.18);
+  animation:fadeUp 0.7s ease forwards;
+}
+
+@keyframes fadeUp{
+  from{
+    opacity:0;
+    transform:translateY(20px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.name{
+  font-family:'Playfair Display',serif;
+  font-size:4rem;
+  font-weight:700;
+  color:#5a3e5a;
+  margin-bottom:14px;
+}
+
+.tagline{
+  font-size:1rem;
+  color:#a08898;
+  font-weight:300;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  margin-bottom:44px;
+}
+
+.pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  justify-content:center;
+  margin-bottom:42px;
+}
+
+.pill{
+  background:rgba(255,255,255,0.8);
+  border:1px solid rgba(200,155,190,0.35);
+  border-radius:999px;
+  padding:12px 22px;
+  font-size:0.95rem;
+  color:#7a5570;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.divider{
+  height:1px;
+  background:linear-gradient(
+    to right,
+    transparent,
+    rgba(200,155,190,0.35),
+    transparent
+  );
+  margin-bottom:28px;
+}
+
+.footer{
+  font-size:0.8rem;
+  color:#b8a0b0;
+  letter-spacing:0.08em;
+}
+
+.dot{
+  display:inline-block;
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#b8d8b8;
+  margin-right:6px;
+  vertical-align:middle;
+  animation:blink 2s ease-in-out infinite;
+}
+
+@keyframes blink{
+  0%,100%{
+    opacity:1;
+  }
+  50%{
+    opacity:0.2;
+  }
+}
+
+@media(max-width:768px){
+
+  .card{
+    padding:50px 28px;
   }
 
-  .bg {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
-    pointer-events: none;
+  .name{
+    font-size:2.5rem;
   }
 
-  .ombre {
-    position: absolute;
-    top: 0; right: 0;
-    width: 45%;
-    height: 100%;
-    background: linear-gradient(160deg, #f9c8d8 0%, #e8b8d8 40%, #c8a8e8 80%, #b8c8f0 100%);
-    opacity: 0.45;
-    border-radius: 60% 0 0 60%;
+  .tagline{
+    font-size:0.75rem;
+    letter-spacing:0.1em;
   }
 
-  .blob { position: absolute; border-radius: 50%; filter: blur(55px); opacity: 0.3; animation: float 8s ease-in-out infinite; }
-  .blob1 { width: 380px; height: 380px; background: #f5c6d0; top: -80px; left: -80px; animation-delay: 0s; }
-  .blob2 { width: 220px; height: 220px; background: #f9e0bb; top: 20%; left: 35%; animation-delay: 1.5s; }
-  .blob3 { width: 200px; height: 200px; background: #b8d8e8; bottom: -60px; left: 20%; animation-delay: 3s; }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0px) scale(1); }
-    50% { transform: translateY(-18px) scale(1.04); }
+  .pill{
+    width:100%;
+    justify-content:center;
   }
-
-  canvas {
-    position: absolute;
-    top: 0; right: 0;
-    width: 45%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .card {
-    position: relative;
-    z-index: 2;
-    background: rgba(255,255,255,0.62);
-    backdrop-filter: blur(22px);
-    border: 1px solid rgba(255,255,255,0.85);
-    border-radius: 32px;
-    padding: 52px 48px;
-    max-width: 520px;
-    width: 90%;
-    text-align: center;
-    box-shadow: 0 8px 40px rgba(180,130,160,0.15);
-  }
-
-  .avatar {
-    width: 90px; height: 90px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #f5c6d0, #c8b8e8);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2.2rem;
-    margin: 0 auto 24px;
-    box-shadow: 0 4px 24px rgba(200,140,180,0.35);
-    animation: pulse 4s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 4px 24px rgba(200,140,180,0.35); }
-    50% { box-shadow: 0 4px 36px rgba(200,140,180,0.6); }
-  }
-
-  .name {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.4rem;
-    font-weight: 700;
-    color: #5a3e5a;
-    margin-bottom: 8px;
-    animation: fadeUp 0.8s ease forwards;
-  }
-
-  .tagline {
-    font-size: 0.85rem;
-    color: #a08898;
-    font-weight: 300;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 36px;
-    animation: fadeUp 0.9s ease forwards;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(14px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 36px;
-  }
-
-  .pill {
-    background: rgba(255,255,255,0.72);
-    border: 1px solid rgba(200,155,190,0.3);
-    border-radius: 999px;
-    padding: 8px 20px;
-    font-size: 0.82rem;
-    color: #7a5570;
-    font-weight: 400;
-    letter-spacing: 0.03em;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-decoration: none;
-  }
-
-  .pill:hover { background: rgba(255,255,255,0.9); }
-
-  .divider {
-    height: 1px;
-    background: linear-gradient(to right, transparent, rgba(200,155,190,0.3), transparent);
-    margin: 0 0 28px;
-  }
-
-  .footer {
-    font-size: 0.75rem;
-    color: #b8a0b0;
-    letter-spacing: 0.08em;
-  }
-
-  .dot {
-    display: inline-block;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #b8d8b8;
-    margin-right: 6px;
-    vertical-align: middle;
-    animation: blink 2s ease-in-out infinite;
-  }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
+}
 </style>
 </head>
+
 <body>
-  <div class="bg">
-    <div class="ombre"></div>
-    <div class="blob blob1"></div>
-    <div class="blob blob2"></div>
-    <div class="blob blob3"></div>
-  </div>
 
-  <canvas id="rain"></canvas>
+<div class="ombre"></div>
 
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+
+<canvas id="bubbles"></canvas>
+
+<div class="wrap">
   <div class="card">
-    <div class="avatar">🌸</div>
-    <div class="name">Samika Khadka</div>
-    <div class="tagline">BE Software Engineering &nbsp;·&nbsp; Roll No. 33</div>
+
+    <div class="name">
+      Samika Khadka
+    </div>
+
+    <div class="tagline">
+      BESE2023 &nbsp;&middot;&nbsp; Roll_no: 33
+    </div>
 
     <div class="pills">
+
       <span class="pill">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c06080" stroke-width="2" stroke-lineca
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c06080" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5"/>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+        </svg>
+        samika_k_
+      </span>
+
+      <span class="pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#7a5570">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577v-2.165c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        samika888
+      </span>
+
+      <span class="pill">
+        GCES
+      </span>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+      <span class="dot"></span>
+      BlaBla
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+const canvas = document.getElementById('bubbles');
+const ctx = canvas.getContext('2d');
+
+let bubbles = [];
+let settled = [];
+
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function createBubble(){
+  return{
+    x:Math.random()*canvas.width,
+    y:-20,
+    r:2 + Math.random()*8,
+    speed:0.5 + Math.random()*1.5,
+    drift:(Math.random()-0.5)*0.6,
+    opacity:0.12 + Math.random()*0.35,
+    color:[
+      '#f6b2d0',
+      '#e9b8ff',
+      '#f7c5da',
+      '#d9c2ff',
+      '#f3a7c9'
+    ][Math.floor(Math.random()*5)]
+  };
+}
+
+function init(){
+  bubbles = [];
+  settled = [];
+
+  for(let i=0;i<90;i++){
+    bubbles.push(createBubble());
+    bubbles[i].y = Math.random()*canvas.height;
+  }
+}
+
+function drawBubble(b){
+  ctx.beginPath();
+  ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+  ctx.fillStyle = b.color;
+  ctx.globalAlpha = b.opacity;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(b.x-b.r/3,b.y-b.r/3,b.r/3,0,Math.PI*2);
+  ctx.fillStyle = 'white';
+  ctx.globalAlpha = b.opacity*0.6;
+  ctx.fill();
+}
+
+function animate(){
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  for(let s of settled){
+    drawBubble(s);
+  }
+
+  for(let i=0;i<bubbles.length;i++){
+
+    let b = bubbles[i];
+
+    b.y += b.speed;
+    b.x += b.drift;
+
+    drawBubble(b);
+
+    if(b.y > canvas.height - b.r - Math.random()*25){
+
+      settled.push({
+        x:b.x,
+        y:canvas.height - b.r - Math.random()*12,
+        r:b.r,
+        opacity:b.opacity,
+        color:b.color
+      });
+
+      bubbles[i] = createBubble();
+    }
+  }
+
+  ctx.globalAlpha = 1;
+
+  if(settled.length > 220){
+    settled.splice(0,4);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+resize();
+init();
+animate();
+
+window.addEventListener('resize',()=>{
+  resize();
+  init();
+});
+
+</script>
+
+</body>
+</html>
