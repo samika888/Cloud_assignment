@@ -1,0 +1,97 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      HOST: ${{ secrets.SERVER_IP }}
+      USER: ${{ secrets.SERVER_USER }}
+      PASS: ${{ secrets.SERVER_PASSWORD }}
+      SHA: ${{ github.sha }}
+      PORT: "8033"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install sshpass
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+
+      - name: Setup server
+        run: |
+          set -e
+          echo '<VirtualHost *:'"$PORT"'>' > /tmp/gh-actions.conf
+          echo '    DocumentRoot /home/'"$USER"'/gh-actions-app/current' >> /tmp/gh-actions.conf
+          echo '    <Directory /home/'"$USER"'/gh-actions-app/>' >> /tmp/gh-actions.conf
+          echo '        Options -Indexes +FollowSymLinks' >> /tmp/gh-actions.conf
+          echo '        AllowOverride None' >> /tmp/gh-actions.conf
+          echo '        Require all granted' >> /tmp/gh-actions.conf
+          echo '    </Directory>' >> /tmp/gh-actions.conf
+          echo '    ErrorLog ${APACHE_LOG_DIR}/gh-actions-error.log' >> /tmp/gh-actions.conf
+          echo '    CustomLog ${APACHE_LOG_DIR}/gh-actions-access.log combined' >> /tmp/gh-actions.conf
+          echo '</VirtualHost>' >> /tmp/gh-actions.conf
+
+          sshpass -p "$PASS" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /tmp/gh-actions.conf "$USER@$HOST:/tmp/gh-actions.conf"
+
+          sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USER@$HOST" "
+            set -e
+            if ! dpkg -s apache2 2>/dev/null | grep -q 'Status: install ok installed'; then
+              echo '$PASS' | sudo -S apt-get update -qq
+              echo '$PASS' | sudo -S apt-get install -y -qq apache2
+            fi
+            mkdir -p ~/gh-actions-app/{v1,v2}
+            if ! grep -q 'Listen $PORT' /etc/apache2/ports.conf 2>/dev/null; then
+              echo '$PASS' | sudo -S sh -c 'echo \"Listen $PORT\" >> /etc/apache2/ports.conf'
+            fi
+            echo '$PASS' | sudo -S mv /tmp/gh-actions.conf /etc/apache2/sites-available/gh-actions.conf
+            if ! [ -L /etc/apache2/sites-enabled/gh-actions.conf ]; then
+              echo '$PASS' | sudo -S a2ensite gh-actions.conf
+            fi
+            echo '$PASS' | sudo -S chmod 755 /home/\$USER/
+            echo '$PASS' | sudo -S chown -R \$USER:www-data ~/gh-actions-app/
+            echo '$PASS' | sudo -S apache2ctl configtest
+            echo '$PASS' | sudo -S apache2ctl graceful
+          "
+
+      - name: Blue-Green Deploy
+        run: |
+          set -e
+          sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USER@$HOST" "echo 'SSH OK'"
+
+          INACTIVE=$(sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USER@$HOST" "
+            APP_DIR=/home/$USER/gh-actions-app
+            if [ -L \$APP_DIR/current ] && [ \"\$(readlink \$APP_DIR/current)\" = \"\$APP_DIR/v2\" ]; then
+              echo v1
+            else
+              echo v2
+            fi
+          ")
+
+          SHORT_SHA="${SHA:0:7}"
+          DEPLOY_TIME="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          sed "s/__COMMIT_HASH__/$SHORT_SHA/g; s/__DEPLOY_TIME__/$DEPLOY_TIME/g" index.html > /tmp/index_deploy.html
+
+          sshpass -p "$PASS" scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null /tmp/index_deploy.html "$USER@$HOST:/home/$USER/gh-actions-app/$INACTIVE/index.html"
+
+          sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$USER@$HOST" "
+            APP_DIR=/home/$USER/gh-actions-app
+            ln -sfn \$APP_DIR/$INACTIVE \$APP_DIR/current
+            echo '$PASS' | sudo -S apache2ctl graceful
+            echo \"\$(date -u '+%Y-%m-%dT%H:%M:%SZ') - deployed $INACTIVE\" >> \$APP_DIR/deploy.log
+          "
+
+      - name: Verify deployment
+        run: |
+          sleep 2
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" "http://$HOST:$PORT/")
+          echo "HTTP Status: $RESPONSE"
+          if [ "$RESPONSE" != "200" ]; then
+            echo "Deployment failed!"
+            exit 1
+          fi
+          echo "✅ Live at http://$HOST:$PORT"
