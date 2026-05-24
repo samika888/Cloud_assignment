@@ -55,6 +55,69 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 60px;display:fl
   padding:100px 0 60px;
   overflow:hidden;
 }
+@keyframes badgeFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.6); opacity: 0.5; }
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.2rem 0 0.6rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #7b3fa0;
+  background: rgba(192, 132, 216, 0.1);
+  border: 1px solid rgba(192, 132, 216, 0.28);
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  opacity: 0;
+  animation: badgeFadeUp 0.5s ease forwards;
+  transition: background 0.25s, transform 0.2s;
+}
+
+/* stagger each badge */
+.badge:nth-child(1) { animation-delay: 0.1s; }
+.badge:nth-child(2) { animation-delay: 0.25s; }
+.badge:nth-child(3) { animation-delay: 0.4s; }
+
+.badge:hover {
+  background: rgba(192, 132, 216, 0.2);
+  transform: translateY(-2px);
+}
+
+.badge .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c084d8;
+  flex-shrink: 0;
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+/* stagger dot pulse so they don't all pulse together */
+.badge:nth-child(2) .dot { animation-delay: 0.4s; }
+.badge:nth-child(3) .dot { animation-delay: 0.8s; }
+
 .hero-inner{
   width:100%;
   max-width:1100px;
@@ -388,6 +451,11 @@ footer span{color:var(--accent);font-family:'Caveat',cursive;font-size:1rem;}
       <span class="line1">Hey there,</span>
       <span class="line2">I'm Samika Khadka.</span>
     </h1>
+    <div class="badges">
+  <span class="badge"><span class="dot"></span>BESE2023</span>
+  <span class="badge"><span class="dot"></span>Software Engineering Student</span>
+  <span class="badge"><span class="dot"></span>6th Semester</span>
+</div>
     <p class="hero-sub">Still figuring things out. Having a great time doing it.</p>
     <a href="#connect" class="hero-cta">Find me out there &rarr;</a>
   </div>
